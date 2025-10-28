@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { formatUnits, parseUnits } from "viem";
+import { type Address, formatUnits, parseUnits } from "viem";
 import { useAccount } from "wagmi";
-import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 
 export const LiquidityPanel = () => {
@@ -14,16 +14,9 @@ export const LiquidityPanel = () => {
   const [isApprovedA, setIsApprovedA] = useState(false);
   const [isApprovedB, setIsApprovedB] = useState(false);
 
-  // Get token addresses
-  const { data: tokenAAddress } = useScaffoldContractRead({
-    contractName: "SimpleDEX",
-    functionName: "tokenA",
-  });
-
-  const { data: tokenBAddress } = useScaffoldContractRead({
-    contractName: "SimpleDEX",
-    functionName: "tokenB",
-  });
+  // Get SimpleDEX contract address
+  const { data: dexContractInfo } = useDeployedContractInfo("SimpleDEX");
+  const dexAddress = dexContractInfo?.address as Address | undefined;
 
   // Get reserves
   const { data: reserves } = useScaffoldContractRead({
@@ -39,6 +32,7 @@ export const LiquidityPanel = () => {
   const { data: userLiquidityData, refetch: refetchUserLiquidity } = useScaffoldContractRead({
     contractName: "SimpleDEX",
     functionName: "getUserLiquidity",
+    // @ts-expect-error - Address type compatibility
     args: [connectedAddress],
   });
 
@@ -50,12 +44,14 @@ export const LiquidityPanel = () => {
   const { data: balanceA } = useScaffoldContractRead({
     contractName: "MyToken",
     functionName: "balanceOf",
+    // @ts-expect-error - Address type compatibility
     args: [connectedAddress],
   });
 
   const { data: balanceB } = useScaffoldContractRead({
     contractName: "SimpleUSDC",
     functionName: "balanceOf",
+    // @ts-expect-error - Address type compatibility
     args: [connectedAddress],
   });
 
@@ -74,13 +70,15 @@ export const LiquidityPanel = () => {
   const { data: allowanceA, refetch: refetchAllowanceA } = useScaffoldContractRead({
     contractName: "MyToken",
     functionName: "allowance",
-    args: [connectedAddress, tokenAAddress],
+    // @ts-expect-error - Address type compatibility
+    args: [connectedAddress, dexAddress],
   });
 
   const { data: allowanceB, refetch: refetchAllowanceB } = useScaffoldContractRead({
     contractName: "SimpleUSDC",
     functionName: "allowance",
-    args: [connectedAddress, tokenBAddress],
+    // @ts-expect-error - Address type compatibility
+    args: [connectedAddress, dexAddress],
   });
 
   // Update approval status
@@ -97,13 +95,15 @@ export const LiquidityPanel = () => {
   const { writeAsync: approveTokenA } = useScaffoldContractWrite({
     contractName: "MyToken",
     functionName: "approve",
-    args: [tokenAAddress, parseUnits("1000000", 18)],
+    // @ts-expect-error - Address type compatibility
+    args: [dexAddress, parseUnits("1000000", 18)],
   });
 
   const { writeAsync: approveTokenB } = useScaffoldContractWrite({
     contractName: "SimpleUSDC",
     functionName: "approve",
-    args: [tokenBAddress, parseUnits("1000000", 6)],
+    // @ts-expect-error - Address type compatibility
+    args: [dexAddress, parseUnits("1000000", 6)],
   });
 
   // Add liquidity
