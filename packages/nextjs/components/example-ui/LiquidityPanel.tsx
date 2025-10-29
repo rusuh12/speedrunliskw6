@@ -7,7 +7,8 @@ import { useDeployedContractInfo, useScaffoldContractRead, useScaffoldContractWr
 import { notification } from "~~/utils/scaffold-eth";
 
 export const LiquidityPanel = () => {
-  const { address: connectedAddress } = useAccount();
+  const { address } = useAccount();
+  const connectedAddress = address as `0x${string}`;
   const [amountA, setAmountA] = useState("");
   const [amountB, setAmountB] = useState("");
   const [removeAmount, setRemoveAmount] = useState("");
@@ -32,7 +33,6 @@ export const LiquidityPanel = () => {
   const { data: userLiquidityData, refetch: refetchUserLiquidity } = useScaffoldContractRead({
     contractName: "SimpleDEX",
     functionName: "getUserLiquidity",
-    // @ts-expect-error - Address type compatibility
     args: [connectedAddress],
   });
 
@@ -44,14 +44,12 @@ export const LiquidityPanel = () => {
   const { data: balanceA } = useScaffoldContractRead({
     contractName: "MyToken",
     functionName: "balanceOf",
-    // @ts-expect-error - Address type compatibility
     args: [connectedAddress],
   });
 
   const { data: balanceB } = useScaffoldContractRead({
     contractName: "SimpleUSDC",
     functionName: "balanceOf",
-    // @ts-expect-error - Address type compatibility
     args: [connectedAddress],
   });
 
@@ -70,14 +68,12 @@ export const LiquidityPanel = () => {
   const { data: allowanceA, refetch: refetchAllowanceA } = useScaffoldContractRead({
     contractName: "MyToken",
     functionName: "allowance",
-    // @ts-expect-error - Address type compatibility
     args: [connectedAddress, dexAddress],
   });
 
   const { data: allowanceB, refetch: refetchAllowanceB } = useScaffoldContractRead({
     contractName: "SimpleUSDC",
     functionName: "allowance",
-    // @ts-expect-error - Address type compatibility
     args: [connectedAddress, dexAddress],
   });
 
@@ -95,14 +91,12 @@ export const LiquidityPanel = () => {
   const { writeAsync: approveTokenA } = useScaffoldContractWrite({
     contractName: "MyToken",
     functionName: "approve",
-    // @ts-expect-error - Address type compatibility
     args: [dexAddress, parseUnits("1000000", 18)],
   });
 
   const { writeAsync: approveTokenB } = useScaffoldContractWrite({
     contractName: "SimpleUSDC",
     functionName: "approve",
-    // @ts-expect-error - Address type compatibility
     args: [dexAddress, parseUnits("1000000", 6)],
   });
 
